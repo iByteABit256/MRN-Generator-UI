@@ -75,7 +75,9 @@ impl eframe::App for MrnGeneratorApp {
 
             ui.separator();
             ui.label("Output:");
-            ui.text_edit_multiline(&mut self.output);
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.text_edit_multiline(&mut self.output);
+            });
         });
     }
 }
@@ -107,6 +109,10 @@ fn generate_mrns(
                     is_err = true;
                 }
             }
+        } else if let Some(combined) = combined_opt {
+            output = format!("You can't combine {combined} without providing a procedure category")
+                .to_string();
+            break;
         };
 
         if is_err {
