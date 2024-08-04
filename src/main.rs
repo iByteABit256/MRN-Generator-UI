@@ -1,3 +1,5 @@
+#![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
+
 use core::f32;
 use eframe::egui;
 use mrn_generator::{generate_random_mrn, match_procedure};
