@@ -1,6 +1,5 @@
 #![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
 
-use core::f32;
 use eframe::egui;
 use mrn_generator::{generate_random_mrn, match_procedure};
 
@@ -33,38 +32,51 @@ impl eframe::App for MrnGeneratorApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.heading("MRN Generator");
 
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("Country Code:");
                 ui.add(egui::TextEdit::singleline(&mut self.country_code).char_limit(2)
                     .hint_text("Country code, this is mandatory"));
             });
 
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("Number of MRNs:");
                 ui.add(egui::TextEdit::singleline(&mut self.number_of_mrns).char_limit(3)
                 .hint_text("Number of MRNs to generate, default is 1"));
             });
 
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("Procedure Category:");
                 ui.add(egui::TextEdit::singleline(&mut self.procedure_category)
-                .desired_width(f32::INFINITY).char_limit(2)
+                .desired_width(400.0).char_limit(2)
                     .hint_text("Change penultimate digit based on procedure category, optional"));
             });
 
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("Combined Procedure Category:");
-                ui.add(egui::TextEdit::singleline(&mut self.combined)
-                .desired_width(f32::INFINITY).char_limit(1)
-                    .hint_text("Change penultimate digit based on combined procedure category, optional"));
+                egui::ComboBox::from_label("Select Combined Procedure Category")
+                    .selected_text(&self.combined)
+                    .show_ui(ui, |ui| {
+                        ui.selectable_value(&mut self.combined, String::new(), "None");
+                        ui.selectable_value(&mut self.combined, "A".to_string(), "A");
+                        ui.selectable_value(&mut self.combined, "F".to_string(), "F");
+                    });
             });
 
+            ui.add_space(5.0);
+            ui.label("Combines the given procedure category with a different kind of procedure category, specifically for A* and F* categories.");
+
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("Declaration Office:");
                 ui.add(egui::TextEdit::singleline(&mut self.declaration_office).char_limit(6)
                 .hint_text("Customs office of declaration, optional"));
             });
 
+            ui.add_space(10.0);
             if ui.button("Generate MRNs").clicked() {
                 self.output = generate_mrns(
                     &self.country_code,
@@ -75,7 +87,9 @@ impl eframe::App for MrnGeneratorApp {
                 );
             }
 
+            ui.add_space(10.0);
             ui.separator();
+            ui.add_space(10.0);
             ui.label("Output:");
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.text_edit_multiline(&mut self.output);
